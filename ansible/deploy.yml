@@ -1,0 +1,48 @@
+- name: Deploy Backend Application
+  hosts: your_ec2_instance # Will be passed from GitHub Actions
+  become: yes
+
+  vars:
+    ecr_repo_uri: "{{ ecr_repo_uri }}" # Variable passed from GitHub Actions
+    image_tag: "{{ image_tag }}" # Variable passed from GitHub Actions
+    aws_region: "your-aws-region"
+    aws_account_id: "your-aws-account-id"
+
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Login to Amazon ECR
+      shell: >
+        aws ecr get-login-password --region {{ aws_region }} |
+        docker login --username AWS --password-stdin
+        {{ aws_account_id }}.dkr.ecr.{{ aws_region }}.amazonaws.com
+
+    - name: Stop and remove existing container
+      docker_container:
+        name: backend-app
+        state: absent
+      ignore_errors: yes
+
+    - name: Pull latest image from ECR
+      docker_image:
+        name: "{{ ecr_repo_uri }}:{{ image_tag }}"
+        source: pull
+
+    - name: Run new container
+      docker_container:
+        name: backend-app
+        image: "{{ ecr_repo_uri }}:{{ image_tag }}"
+        state: started
+        ports:
+          - "3000:3000"
+        restart_policy: always

@@ -1,0 +1,29 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+
+jobs:
+  deploy-to-amplify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: your-aws-region
+
+      - name: Deploy to AWS Amplify
+        uses: aws-actions/aws-amplify-deploy@v1
+        with:
+          app-id: ${{ secrets.AMPLIFY_APP_ID }}
+          branch-name: main
+          app-root: frontend # Thư mục chứa mã nguồn frontend
