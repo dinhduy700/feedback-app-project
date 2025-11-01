@@ -5,8 +5,8 @@
   vars:
     ecr_repo_uri: "{{ ecr_repo_uri }}" # Variable passed from GitHub Actions
     image_tag: "{{ image_tag }}" # Variable passed from GitHub Actions
-    aws_region: "your-aws-region"
-    aws_account_id: "your-aws-account-id"
+    aws_region: "ap-southeast-1"
+    aws_account_id: "157321763663"
 
   tasks:
     - name: Install Docker
