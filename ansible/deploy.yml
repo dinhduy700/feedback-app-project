@@ -1,5 +1,5 @@
 - name: Deploy Backend Application
-  hosts: your_ec2_instance # Will be passed from GitHub Actions
+  hosts: ec2-54-179-127-46.ap-southeast-1.compute.amazonaws.com # Will be passed from GitHub Actions
   become: yes
 
   vars:
